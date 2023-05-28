@@ -5,4 +5,5 @@
 ![VnMRxX.png](https://i.imgloc.com/2023/05/28/VnMRxX.png)
 
 [电费查询](http://cz.gdou.edu.cn/#/gdhydxlogin)
+#### 使用了playwright和rich
 #### 重新学习了python的函数及其参数的使用方式
