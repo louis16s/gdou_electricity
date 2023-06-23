@@ -8,7 +8,8 @@
    - `token`：访问令牌，用于身份验证。
    - `budingID`：楼栋ID，标识要查询的楼栋。
    - `comAddress`：电表地址，指定要查询的电表。
-   - `token`的获取：登录[电费查询](https://cz.gdou.edu.cn/#/gdhydxlogin)。
+   - `token和budingID`的获取：登录[电费查询](https://cz.gdou.edu.cn/#/gdhydxlogin)，
+   - 在登陆前进入F12——网络，抓包，获取token和budingID。
 2. 可选：如果你希望接收推送通知，你可以提供一个有效的token，并将其赋值给 `bark_token` 变量。
    接入bark，配合服务器自动查询并推送到手机上。
 [![V8Nc68.th.png](https://i.imgloc.com/2023/06/20/V8Nc68.th.png)](https://imgloc.com/i/V8Nc68)
