@@ -11,7 +11,7 @@
 
 2. 可选：如果你希望接收推送通知，你可以提供一个有效的 Bark token，并将其赋值给 `bark_token` 变量。
    接入bark，配合服务器自动查询并推送到手机上
-[![V8Nc68.md.png](https://i.imgloc.com/2023/06/20/V8Nc68.md.png)](https://imgloc.com/i/V8Nc68)
+[![V8Nc68.th.png](https://i.imgloc.com/2023/06/20/V8Nc68.th.png)](https://imgloc.com/i/V8Nc68)
 3. 运行代码。
 
 ## 依赖
@@ -30,7 +30,7 @@ token = '...'
 budingID = '...'
 comAddress = '...'
 bark_token = '...'
-
+```
 ## 注意事项
 确保你的网络连接正常，以便能够成功发送请求和接收响应。
 如果电费查询失败，请检查你的校园网连接。
