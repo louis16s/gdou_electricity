@@ -1,7 +1,7 @@
 # 电费查询
 
 这个项目是一个用于查询广东海洋大学电费的脚本，获取电表信息并显示电费余额。
-ios 快捷指令 [电费查询](https://www.icloud.com/shortcuts/6631445ecfd04095afdf0c08c487c185)
+ [ios-快捷指令-电费查询](https://www.icloud.com/shortcuts/6631445ecfd04095afdf0c08c487c185)
 ## 使用方法
 
 1. 在代码中填写正确的参数：
