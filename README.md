@@ -1,68 +1,240 @@
-+# `electric_requests.py` 使用说明
-+
-+`electric_requests.py` 是一个使用 Python `requests` 库实现的广东海洋大学电费查询脚本。脚本会自动登录智慧能源平台，刷新电表抄表数据，并可将成功或失败结果通过 [Bark](https://github.com/Finb/Bark) 推送到手机。
-+
-+## 功能特点
-+- 以学工账号登录并验证身份。
-+- 调用内部接口换取应用访问 `token`。
-+- 查询宿舍电表信息并执行一次远程抄表刷新。
-+- 输出最新电量、电费、更新时间等关键信息。
-+- 可选地向 Bark 推送成功或失败通知。
-+
-+## 环境要求
-+- Python 3.9+
-+- 网络可以访问 `https://cz.gdou.edu.cn` 与 `https://api.day.app`
-+
-+### 依赖库
-+脚本仅依赖于标准库和第三方库 `requests`。推荐额外安装 `rich` 以便在终端输出彩色信息（需要自行在脚本中加入 `rich` 相关代码）。
-+
-+```bash
-+pip install requests
-+```
-+
-+## 使用前准备
-+1. **填写学生信息**：在脚本顶部的配置区填入以下内容：
-+   - `STUDENT_NAME`
-+   - `STUDENT_OUTID`（学工号/一卡通账号）
-+   - `STUDENT_PWD`
-+2. **配置 Bark 推送（可选）**：
-+   - 建议在运行环境中设置 `BARK_TOKEN` 环境变量。
-+   - 也可以直接修改 `DEFAULT_BARK_TOKEN` 常量。
-+
-+## 运行方式
-+```bash
-+python electric_requests.py
-+```
-+脚本将按以下步骤执行：
-+1. 登录账号，打印返回的登录结果。
-+2. 获取电力系统访问 `token`。
-+3. 根据学号查询宿舍电表信息。
-+4. 调用刷新接口强制抄表。
-+5. 获取刷新后的电表状态，并在终端逐项打印。
-+6. 若配置了 Bark，会推送带有余额、总电量和更新时间的通知。
-+
-+> 提示：脚本默认关闭了 HTTPS 证书告警，因为校园网络常使用自签证书。若在公网环境使用，可考虑移除此行为并提供合法证书。
-+
-+## 定时运行（可选）
-+若需定期查询并推送，可以结合以下方案：
-+- Linux/macOS：使用 `cron`，例如每小时执行一次。
-+- Windows：使用「任务计划程序」。
-+- 自建服务：将脚本放入长期运行的容器或云函数。
-+
-+示例 `cron` 条目（每两小时运行一次）：
-+```
-+0 */2 * * * /usr/bin/python3 /path/to/electric_requests.py >> /var/log/gdou_electricity.log 2>&1
-+```
-+
-+## 故障排查
-+- **登录失败**：核对学号/密码是否正确，或检查是否需要更新脚本参数。
-+- **请求超时**：确认校园网或代理是否可访问目标接口，并适当增大 `timeout`。
-+- **Bark 未推送**：确保环境变量或默认 Token 正确，且 Bark 应用未被系统限制通知。
-+
-+## 安全建议
-+- 切勿将学号密码写入公共仓库。
-+- 如果脚本部署在服务器上，建议通过环境变量注入凭据。
-+- 定期更换 Bark Token，并避免日志中泄露个人信息。
-+
-+## 许可
-+项目继承仓库原有许可协议，如需二次分发，请遵守原作者的开源条款。
+# 🧠 GDOU 电费查询 (Requests 版) + Bark 推送
+
+> 自动登录 → 获取 token → 查宿舍电表 → 刷新抄表 → 查询最新数据 → Bark 推送。  
+> 轻量、稳定、无浏览器依赖的广东海洋大学宿舍电费查询脚本。
+
+---
+
+## 🌟 特性
+
+- 一条命令即可获取最新电量、电费余额、更新时间等信息  
+- 成功 / 失败 均支持 **Bark** 推送通知  
+- 纯 `requests` 实现，无 Selenium / 浏览器依赖  
+- 自动抄表刷新，避免读取旧数据  
+- 清晰的错误提示与异常捕获
+
+---
+
+## 🧩 原理与流程
+
+1. 登录学生账号（验证学号与密码）  
+2. 生成签名并获取 **App Token**  
+3. 查询宿舍电表基础信息（楼栋、表号等）  
+4. 触发一次抄表刷新  
+5. 获取最新电表读数与更新时间  
+6. 将结果通过 **Bark 推送** 至手机
+
+---
+
+## 🧰 环境要求
+
+- Python ≥ 3.8  
+- 网络可访问学校用电系统接口  
+
+安装依赖：
+```bash
+pip install requests
+````
+
+---
+
+## 🚀 快速开始
+
+### 1. 克隆项目并安装依赖
+
+```bash
+git clone https://github.com/<your-username>/gdou-electric.git
+cd gdou-electric
+pip install -r requirements.txt
+```
+
+### 2. 配置学号与密码
+
+打开 `electric_requests.py`，找到：
+
+```python
+STUDENT_NAME   = ""  # 姓名，可留空
+STUDENT_OUTID  = ""  # 学号/一卡通号
+STUDENT_PWD    = ""  # 登录密码
+```
+
+### 3. （可选）配置 Bark 推送
+
+* 推荐使用环境变量：
+
+  ```bash
+  export BARK_TOKEN="你的Bark令牌"
+  ```
+* 或直接修改脚本中的：
+
+  ```python
+  DEFAULT_BARK_TOKEN = os.getenv("BARK_TOKEN", "")
+  ```
+
+### 4. 运行
+
+```bash
+python electric_requests.py
+```
+
+---
+
+## 📄 输出示例
+
+终端输出：
+
+```
+登录成功，返回数据：{...}
+获取到 token: eyJhbGciOi...
+电表信息如下：
+leftMoney: 23.50
+meterData: 1234.56
+updateDateTime: 2025-10-18 09:32:10
+```
+
+Bark 推送内容：
+
+```
+[2025-10-18][09:35:42]
+XX园区 XX栋-XX房
+余额: 23.50
+总电量(kWh): 1234.56
+更新时间: 2025-10-18 09:32:10
+```
+
+---
+
+## ⚙️ 可配置项
+
+| 变量名                  | 说明            | 默认值     |
+| -------------------- | ------------- | ------- |
+| `STUDENT_NAME`       | 学生姓名          | `""`    |
+| `STUDENT_OUTID`      | 学号/一卡通账号      | 必填      |
+| `STUDENT_PWD`        | 登录密码          | 必填      |
+| `DEFAULT_BARK_TOKEN` | Bark 令牌       | 从环境变量读取 |
+| `BARK_ICON`          | Bark 通知图标 URL | 可选      |
+| `BASE`               | 电费系统接口地址      | 默认校内    |
+
+---
+
+## ⏰ 定时运行
+
+### Linux / macOS
+
+编辑定时任务：
+
+```bash
+crontab -e
+```
+
+添加：
+
+```
+30 7,19 * * * /usr/bin/env BARK_TOKEN=你的令牌 /usr/bin/python3 /path/to/electric_requests.py >> /path/to/electric.log 2>&1
+```
+
+### Windows
+
+使用“任务计划程序”：
+
+* 时间：每天 07:30、19:30
+* 程序：`python.exe`
+* 参数：`C:\path\to\electric_requests.py`
+
+---
+
+## 🔒 安全与隐私
+
+* 默认关闭 HTTPS 证书校验（`verify=False`），仅建议在校园网环境使用
+
+  * 若需启用校验，请修改为 `verify=True` 或提供 CA 证书路径
+* 避免上传包含学号、密码、Bark 令牌的文件到 GitHub
+
+  * 使用 `.env` 或环境变量管理敏感信息
+
+---
+
+## 🧠 常见问题 (FAQ)
+
+**Q：登录失败或返回 code != 0？**
+A：检查账号密码是否正确，或系统是否更新了登录接口。
+
+**Q：抄表失败？**
+A：学校系统可能在维护，或电表接口字段发生变化。
+
+**Q：Bark 没有推送？**
+A：确认 `BARK_TOKEN` 是否正确，是否能访问 `https://api.day.app/`。
+
+**Q：为什么要先刷新抄表？**
+A：系统查询接口常返回上次采集结果，刷新可确保数据最新。
+
+---
+
+## 🧑‍💻 二次开发指南
+
+主要函数：
+
+| 函数名                        | 功能说明       |
+| -------------------------- | ---------- |
+| `login_student()`          | 登录账号       |
+| `get_app_token()`          | 获取 token     |
+| `get_meter_infoallmatch()` | 查询宿舍电表    |
+| `refresh_meter()`          | 触发抄表       |
+| `get_meter_status()`       | 查询电表状态    |
+| `send_bark()`              | 推送 Bark 通知 |
+
+核心逻辑位于 `main()` 函数，异常会被捕获并通过 Bark 推送。
+
+---
+
+## 📁 推荐目录结构
+
+```
+.
+├── electric_requests.py      # 主脚本
+├── requirements.txt          # 依赖列表
+├── README.md                 # 本文件
+└── .gitignore                # 忽略日志与缓存
+```
+
+`requirements.txt`
+
+```
+requests>=2.31.0
+```
+
+`.gitignore`
+
+```
+*.log
+.env
+__pycache__/
+*.pyc
+```
+
+---
+
+## ⚠️ 免责声明
+
+本项目仅供学习与个人使用，请遵守学校网络与数据使用规范。
+因接口变更、系统维护或网络异常导致的数据误差或不可用，责任由使用者自负。
+
+---
+
+## 📜 License
+
+本项目推荐使用 **MIT License**。
+
+---
+
+## 🔭 延伸想法
+
+* 结合 SQLite/CSV 记录每日用电量，绘制趋势曲线
+* 设置余额阈值自动推送提醒（低于 5 元时自动响铃）
+* 集成钉钉 / 飞书 / Telegram Bot 实现多平台通知
+
+---
+
+> ✨ “能量守恒不止于物理，也体现在每次查询电费的理性之中。”
+
+```
