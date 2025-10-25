@@ -1,9 +1,3 @@
-diff --git a/electric_requests_README.md b/electric_requests_README.md
-new file mode 100644
-index 0000000000000000000000000000000000000000..8b9d2d7075396b558e216658140b8a74b9602265
---- /dev/null
-+++ b/electric_requests_README.md
-@@ -0,0 +1,68 @@
 +# `electric_requests.py` 使用说明
 +
 +`electric_requests.py` 是一个使用 Python `requests` 库实现的广东海洋大学电费查询脚本。脚本会自动登录智慧能源平台，刷新电表抄表数据，并可将成功或失败结果通过 [Bark](https://github.com/Finb/Bark) 推送到手机。
