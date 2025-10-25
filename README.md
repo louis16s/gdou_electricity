@@ -43,7 +43,7 @@ pip install requests
 ### 1. 克隆项目并安装依赖
 
 ```bash
-git clone https://github.com/<your-username>/gdou-electric.git
+git clone https://github.com/louis16s/gdou_electricity.git
 cd gdou-electric
 pip install -r requirements.txt
 ```
@@ -233,6 +233,7 @@ __pycache__/
 * 设置余额阈值自动推送提醒（低于 5 元时自动响铃）
 * 集成钉钉 / 飞书 / Telegram Bot 实现多平台通知
 
+`.python`
 ---
 
 > ✨ “能量守恒不止于物理，也体现在每次查询电费的理性之中。”
