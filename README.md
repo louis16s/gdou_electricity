@@ -44,7 +44,7 @@ pip install requests
 ### 1. 克隆项目并安装依赖
 
 ```bash
-git clone https://github.com/louis16s/gdou_electricity.git
+git clone https://github.com/louis16s/gdou_electric.git
 cd gdou-electric
 pip install -r requirements.txt
 ```
