@@ -138,9 +138,9 @@ def main():
     building_id = base_info["roomID"]
     com_addr    = base_info["comaddress"]
 
-    # 4) 先刷新抄表，再读状态
-    print("正在刷新电表读数……")
-    refresh_meter(building_id, com_addr)
+    # 4) 先刷新抄表，再读状态 未修复，暂时无法使用
+    #print("正在刷新电表读数……")
+    #refresh_meter(building_id, com_addr)
 
     status = get_meter_status(token, building_id)
 
